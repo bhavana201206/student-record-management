@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Record Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #d1d5db;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            color: white;
+            margin-top: 15px;
+        }
+
+        .search-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-btn {
+            background: #374151;
+            color: white;
+        }
+
+        .all-btn {
+            background: #6b7280;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #1f2937;
+            color: white;
+            padding: 13px;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background: #f3f4f6;
+        }
+
+        .count {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-area {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Student Record Management System</h1>
+        <p>Manage student information easily</p>
+    </div>
+
+    <div class="container">
+
+        <!-- Add Student -->
+        <div class="card">
+            <h2>Add Student</h2>
+
+            <form method="POST" action="/add">
+
+                <div class="form-grid">
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Student Name"
+                        required
+                    >
+
+                    <input
+                        type="text"
+                        name="roll_no"
+                        placeholder="Roll Number"
+                        required
+                    >
+
+                    <input
+                        type="text"
+                        name="branch"
+                        placeholder="Branch"
+                        required
+                    >
+
+                    <input
+                        type="text"
+                        name="marks"
+                        placeholder="Marks"
+                    >
+
+                    <input
+                        type="text"
+                        name="phone"
+                        placeholder="Phone Number"
+                    >
+
+                </div>
+
+                <button class="add-btn" type="submit">
+                    + Add Student
+                </button>
+
+            </form>
+        </div>
+
+
+        <!-- Search -->
+        <div class="card">
+
+            <h2>Search Students</h2>
+
+            <form method="GET" action="/" class="search-area">
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search by name, roll number or branch"
+                    value="{{ search }}"
+                >
+
+                <button class="search-btn" type="submit">
+                    Search
+                </button>
+
+                <a href="/" style="text-decoration:none;">
+                    <button class="all-btn" type="button">
+                        Show All
+                    </button>
+                </a>
+
+            </form>
+
+        </div>
+
+
+        <!-- Student Records -->
+        <div class="card">
+
+            <div class="count">
+                Total Students: {{ students|length }}
+            </div>
+
+            <div class="table-container">
+
+                {% if students %}
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Roll No</th>
+                            <th>Branch</th>
+                            <th>Marks</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for student in students %}
+
+                        <tr>
+
+                            <td>{{ student[0] }}</td>
+                            <td>{{ student[1] }}</td>
+                            <td>{{ student[2] }}</td>
+                            <td>{{ student[3] }}</td>
+                            <td>{{ student[4] }}</td>
+                            <td>{{ student[5] }}</td>
+
+                            <td>
+
+                                <form
+                                    method="POST"
+                                    action="/delete/{{ student[0] }}"
+                                >
+
+                                    <button
+                                        class="delete-btn"
+                                        type="submit"
+                                        onclick="return confirm('Are you sure you want to delete this student?')"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+                {% else %}
+
+                <div class="empty">
+                    No student records found.
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
